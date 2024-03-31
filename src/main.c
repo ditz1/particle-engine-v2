@@ -67,13 +67,14 @@ int main(void)
     int cell_size = (int)particles_in_scene[0].radius * 2; // diameter
     int grid_width = sim_screen_bounds_width / cell_size;
     int grid_height = sim_screen_bounds_height / cell_size;
-
     Grid grid = {
         .width = grid_width,
         .height = grid_height,
         .cell_size = cell_size,
         .cells = (GridCell *)calloc(grid_width * grid_height, sizeof(GridCell)) // calloc initializes to 0
     };
+
+    
     
 
     while (!WindowShouldClose())   
@@ -84,9 +85,12 @@ int main(void)
         } else if (stage_mode == 2) {
             num_particles = 350;
         } else if (stage_mode == 3) {
-            num_particles = 1200;
+            num_particles = 1000;
         } else if (stage_mode == 4) {
-            num_particles = 3000;
+            num_particles = 2000;
+            //grid.cell_size = (int)((particles_in_scene[0].radius) * 2.0);
+        } else if (stage_mode == 5) {
+            num_particles = 4000;
         }
 
         if (sim_should_start == 2) {
@@ -123,6 +127,10 @@ int main(void)
                     break;
                 }
                 case 4: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
+                case 5: {
                     BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
                     break;
                 }

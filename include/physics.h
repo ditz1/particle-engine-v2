@@ -7,9 +7,9 @@
 #include <grid.h>
 #include <stdio.h>
 
-static const float restitution = 0.5f;
-static const float dampening = 0.98f;
-static const float gravity = 200.0f;
+static const float restitution = 0.1f;
+static const float dampening = 0.9f;
+static const float gravity = 50.0f;
 
 void BoundParticles(Particle *particles, int num_particles, int bounds_width, int bounds_height, int mode) {
     
@@ -48,7 +48,7 @@ void BoundParticles(Particle *particles, int num_particles, int bounds_width, in
                 particles[i].velocity = Vector2Scale(tangent, dot);
             }
         }
-    } else if (mode == 3 || mode == 4) {
+    } else if (mode == 3 || mode == 4 || mode == 5) {
         for (int i = 0; i < num_particles; i++) {
             float dist_to_left = particles[i].current_position.x;
             float dist_to_right = bounds_width - particles[i].current_position.x; 
@@ -117,7 +117,7 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
             float penetration_depth = radii_sum - distance;
             Vector2 collision_normal = Vector2Scale(delta, 1.0f / distance);
             
-            float max_penetration = 0.5f * (p1->radius + p2->radius);
+            float max_penetration = 1.1f * (p1->radius + p2->radius);
             penetration_depth = fminf(penetration_depth, max_penetration);
 
             //substep            
@@ -136,7 +136,7 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
                 penetration_depth = fminf(radii_sum - distance, max_penetration);
             }
             
-            float elasticity = 0.6f;
+            float elasticity = 0.5f;
             Vector2 relative_velocity = Vector2Subtract(p1->velocity, p2->velocity);
             float velocity_along_normal = Vector2DotProduct(relative_velocity, collision_normal);
             
@@ -144,17 +144,17 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
             
             float p1_speed = Vector2Length(p1->velocity);
             float p2_speed = Vector2Length(p2->velocity);
-            float rest_threshold = 0.2f;
+            float rest_threshold = 0.1f;
             
             if (p1_speed < rest_threshold || p2_speed < rest_threshold) {
-                elasticity *= 0.8f;
+                elasticity *= 0.9f;
             }
             
             float impulse_magnitude = -(1 + elasticity) * velocity_along_normal;
             impulse_magnitude /= p1->mass + p2->mass;
             
             // Limit the maximum impulse magnitude
-            float max_impulse = 3.0f;
+            float max_impulse = 30.0f;
             impulse_magnitude = fminf(impulse_magnitude, max_impulse);
             
             Vector2 impulse = Vector2Scale(collision_normal, impulse_magnitude);

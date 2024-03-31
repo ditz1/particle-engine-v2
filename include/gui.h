@@ -20,7 +20,7 @@ void DrawStartGui(int screen_width, int screen_height, int stage_mode) {
     float gui_start_x = center_x - 300;
     float gui_start_y = center_y - 300;
     float gui_end_x = 600;
-    float gui_end_y = 400;
+    float gui_end_y = 450;
     int text_spacing_x = gui_start_x + 20;
     int text_spacing_y = gui_start_y + 40;
 
@@ -44,7 +44,8 @@ void DrawStartGui(int screen_width, int screen_height, int stage_mode) {
     DrawText("press 2 for sphere bounds", text_spacing_x, text_spacing_y + 150, start_font_size, font_color);
     DrawText("press 3 for rect bounds", text_spacing_x, text_spacing_y + 200, start_font_size, font_color);
     DrawText("press 4 for lots of particles", text_spacing_x, text_spacing_y + 250, start_font_size, font_color);
-    DrawText(TextFormat("selected mode: %d", stage_mode), text_spacing_x, text_spacing_y + 300, start_font_size, font_color);
+    DrawText("press 5 for even more particles (will lag)", text_spacing_x, text_spacing_y + 300, start_font_size, font_color);
+    DrawText(TextFormat("selected mode: %d", stage_mode), text_spacing_x + 30, text_spacing_y + 350, start_font_size, font_color);
 }
 
 
@@ -106,6 +107,13 @@ void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode)
 
     } else if (IsKeyPressed(KEY_FOUR)){
         *stage_mode = 4;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+        time_elapsed = 0.0f;
+
+    } else if (IsKeyPressed(KEY_FIVE)){
+        *stage_mode = 5;
         printf("stage mode: %d\n", *stage_mode);
         *sim_should_start = 2;
         *sim_is_running = 0;

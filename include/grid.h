@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <particle.h>
 
-#define MAX_PARTICLES_PER_CELL 4
+#define MAX_PARTICLES_PER_CELL 8
 
 // not sure if it would make it faster
 // if i had a "particle index" but 
