@@ -1,0 +1,162 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <raylib.h>
+#include <grid.h>
+#include <particle.h>
+#include <gui.h>
+#include <physics.h>
+
+
+// we will figure out the math later
+// but we need to use multiples of 3 and 9
+
+#define SCREEN_WIDTH 900
+#define SCREEN_HEIGHT 900
+
+
+int main(void)
+{   
+    //little bit lighter than 0, 0, 0
+    Color sim_background_color = BLACK;
+    sim_background_color.a = 255;
+    sim_background_color.r = 30;
+    sim_background_color.g = 30;
+    sim_background_color.b = 30;
+
+    // mode 0 = debug
+    // mode 1 = release
+    int sim_mode = 0;
+    // stage_mode 1 = screen bounds
+    // stage_mode 2 = sphere bounds
+    // stage_mode 3 = rect bounds
+    int stage_mode = 2;
+
+    // will do debug as default for now
+    int num_particles = 30;
+    Particle* particles_in_scene = (Particle *)malloc(num_particles * sizeof(Particle));
+    const int sim_screen_bounds_width = SCREEN_WIDTH;
+    const int sim_screen_bounds_height = SCREEN_HEIGHT;
+
+    // fix this
+    // if (stage_mode == 3) {
+    //     sim_screen_bounds_width = 600;
+    //     sim_screen_bounds_height = 600;
+    // }
+
+    int next_action = 0;
+    int sim_is_running = 0;
+    int sim_should_start = 1;
+
+    // sphere bounds
+    float sphere_bounds_radius = 300.0f;
+    Vector2 bounds_center = (Vector2){sim_screen_bounds_width / 2.0f, sim_screen_bounds_height / 2.0f};
+
+
+
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "particle engine v2");
+    float dt = 0.0f;
+    float time_elapsed = 0.0f;
+    SetTargetFPS(60);               
+
+    // add some function to do all this so we can reset the simulation
+    // "init_simulation" or something
+
+    InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height);
+    int cell_size = (int)particles_in_scene[0].radius * 2; // diameter
+    int grid_width = sim_screen_bounds_width / cell_size;
+    int grid_height = sim_screen_bounds_height / cell_size;
+
+    Grid grid = {
+        .width = grid_width,
+        .height = grid_height,
+        .cell_size = cell_size,
+        .cells = (GridCell *)calloc(grid_width * grid_height, sizeof(GridCell)) // calloc initializes to 0
+    };
+    
+
+    while (!WindowShouldClose())   
+    {
+        
+        dt = GetFrameTime();
+
+        if (sim_should_start == 2) {
+            free(particles_in_scene);
+            printf("freed particles\n");
+            if ((particles_in_scene = (Particle *)malloc(num_particles * sizeof(Particle))) != NULL) {
+                printf("allocated new particles\n");
+                InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height);
+                sim_should_start = 1;
+                printf("resetting simulation...\n");
+            } else {
+                printf("failed to allocate new particles\n");
+                break;
+            }
+        }
+        
+        // BoundParticles(particles_in_scene, num_particles, screen_width, screen_height);
+        // UpdateParticles(particles_in_scene, num_particles, dt);
+        //printf("sim_is_running: %d\n sim_should_start: %d\n", sim_is_running, sim_should_start);
+        
+        if (sim_is_running) {
+        switch (stage_mode) {
+            case 1: {
+                BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                break;    
+            }
+            case 2: {
+                BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                break;
+            }
+        }
+
+            //ResolveCollisions(&grid, particles_in_scene, num_particles, dt);
+            FindCollisionsGrid(&grid);
+            //BruteForceCollisions(particles_in_scene, num_particles);
+            UpdateParticles(particles_in_scene, num_particles, dt);
+            UpdateGrid(&grid, particles_in_scene, num_particles);
+        }
+        // both false means reset
+        // have to figure out how to manage this memory because we 
+        // should probably free the memory when we reset the simulation
+        /*
+        if (!sim_is_running && !sim_should_start) {
+            InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height);
+        }
+        */
+       //printf("particle radius %f\n", particles_in_scene[0].radius);
+        BeginDrawing();
+            
+            ClearBackground(sim_background_color);
+            RecordSimInput(&sim_is_running, &sim_should_start);
+
+            if (!sim_is_running && sim_should_start){
+                DrawStartGui(SCREEN_WIDTH, SCREEN_HEIGHT);
+            } else if (sim_is_running) {
+                DrawCollisionGrid(particles_in_scene[0].radius, sim_screen_bounds_width, sim_screen_bounds_height);
+                DrawParticleBounds(stage_mode, sim_screen_bounds_width, sim_screen_bounds_height);
+                DrawSimGui(SCREEN_WIDTH, SCREEN_HEIGHT);
+                DrawParticles(particles_in_scene, num_particles);
+        
+            }
+
+            
+                
+        EndDrawing();
+
+
+
+        // if (next_action != 0) {
+        //     printf("next action: %d\n", next_action);
+        // }
+            
+    }
+
+    free(particles_in_scene);
+    free(grid.cells);
+    CloseWindow();
+
+
+    return 0;
+}
+
+
