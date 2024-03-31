@@ -59,7 +59,7 @@ void DrawParticleBounds(int mode, int bounds_width, int bound_height){
 
 void DrawSimGui(int screen_width, int screen_height) { 
 
-    float dt = GetFrameTime();
+    float dt = 1.0f/60.0f;
     int x_spacing = 20;
     int starting_y = 20;
     int y_spacing = 50;
@@ -73,8 +73,20 @@ void DrawSimGui(int screen_width, int screen_height) {
 
 }
 
-void RecordSimInput(int* sim_is_running, int* sim_should_start)  {
+void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode)  {
     // reset simulation
+    if (IsKeyPressed(KEY_TWO)){
+        *stage_mode = 2;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+
+    } else if (IsKeyPressed(KEY_ONE)){
+        *stage_mode = 1;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+    }
     if (IsKeyPressed(KEY_R) && *sim_is_running == 0) {
         printf("asked to reset sim\n");
         *sim_should_start = 2;

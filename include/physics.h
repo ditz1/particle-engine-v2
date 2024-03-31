@@ -51,52 +51,17 @@ void BoundParticles(Particle *particles, int num_particles, int bounds_width, in
     }
 }
 
-/*
-void BoundParticles(Particle *particles, int num_particles, int screen_width, int screen_height) {
-    for (int i = 0; i < num_particles; i++) {
-        float bounce_factor = -1 * Clamp(((1.0f / particles[i].mass)), 0.1f, 0.8f);
-        particles[i].current_position.x = Clamp(particles[i].current_position.x, particles[i].radius, screen_width - particles[i].radius);
-        particles[i].current_position.y = Clamp(particles[i].current_position.y, particles[i].radius, screen_height - particles[i].radius);
-        if (particles[i].current_position.x <= particles[i].radius || particles[i].current_position.x >= screen_width - particles[i].radius) {
-            Vector2 velocity = Vector2Subtract(particles[i].current_position, particles[i].last_position);
-            velocity.x *= -1 * bounce_factor;
-            particles[i].last_position = Vector2Subtract(particles[i].current_position, velocity);
-        }
 
-        if (particles[i].current_position.y <= particles[i].radius || particles[i].current_position.y >= screen_height - particles[i].radius) {
-            Vector2 velocity = Vector2Subtract(particles[i].current_position, particles[i].last_position);
-            velocity.y *= -1 * bounce_factor;
-            particles[i].last_position = Vector2Subtract(particles[i].current_position, velocity);
-        }
-    }
-}*/
-
-// maybe we want a gravity constant so it moves faster
 void UpdateParticleGravity(Particle *p, float dt) {
-    p->acceleration.y += gravity; 
-
-}
-/* the worst update particle scheme
-void UpdateParticle(Particle* p, float dt) {
-
-    p->last_position = p->current_position;
-    UpdateParticleGravity(p, dt);
-    
-    Vector2 velocity = Vector2Subtract(p->next_position, p->last_position);
-    
-    
-    if (velocity.x > 50.0f) {
-        velocity.x = 50.0f;
+    if (p->current_position.y + p->radius >= 900) {
+        p->current_position.y = 900 - p->radius;
+        p->velocity.y *= -restitution;
+        p->velocity.y *= dampening;
+    } else {
+        p->acceleration.y += gravity; 
     }
-    if (velocity.y > 50.0f) {
-        velocity.y = 50.0f;
-    }
-    p->next_position = Vector2Add(p->last_position, Vector2Scale(velocity, dt));
-    p->current_position = p->next_position;
-    p->current_position = p->next_position;
-
 }
-*/
+
 
 void UpdateParticle(Particle* p, float dt) {
 
@@ -117,50 +82,113 @@ void UpdateParticle(Particle* p, float dt) {
 
 
 void UpdateParticles(Particle *particles, int num_particles, float dt) {
+    //substep
+    
     for (int i = 0; i < num_particles; i++) {
         UpdateParticle(&particles[i], dt);
     }
 }
 
-void CheckCellCollisions(Particle* p1, Particle* p2) {
+void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
     if (p1 && p2 && p1 != p2) {
         Vector2 delta = Vector2Subtract(p1->current_position, p2->current_position);
         float distance = Vector2Length(delta);
-        float overlap = p1->radius + p2->radius - distance;
+        float radii_sum = p1->radius + p2->radius;
+        
+        if (distance < radii_sum) {
+            float penetration_depth = radii_sum - distance;
+            Vector2 collision_normal = Vector2Scale(delta, 1.0f / distance);
+            
+            float max_penetration = 0.5f * (p1->radius + p2->radius);
+            penetration_depth = fminf(penetration_depth, max_penetration);
 
-        if (overlap > 0) {
-            // Collision detected, resolve the collision
-            Vector2 normal = Vector2Normalize(delta);
-            Vector2 separation = Vector2Scale(normal, overlap);
-
-            // Apply separation to the particles' positions
-            p1->current_position = Vector2Add(p1->current_position, Vector2Scale(separation, 0.5f));
-            p2->current_position = Vector2Subtract(p2->current_position, Vector2Scale(separation, 0.5f));
-
-            // Calculate the relative velocity
-            Vector2 relativeVelocity = Vector2Subtract(p1->velocity, p2->velocity);
-
-            // Calculate the impulse magnitude
-            float impulseMagnitude = Vector2DotProduct(relativeVelocity, normal) / (1.0f / p1->mass + 1.0f / p2->mass);
-
-            // Apply the impulse to the particles' velocities
-            p1->velocity = Vector2Subtract(p1->velocity, Vector2Scale(normal, impulseMagnitude / p1->mass));
-            p2->velocity = Vector2Add(p2->velocity, Vector2Scale(normal, impulseMagnitude / p2->mass));
+            //substep            
+            int max_iterations = 8;
+            float iteration_factor = 1.0f / max_iterations;
+            
+            for (int i = 0; i < max_iterations; i++) {
+                float correction_magnitude = penetration_depth * iteration_factor;
+                Vector2 correction = Vector2Scale(collision_normal, correction_magnitude);
+                
+                p1->current_position = Vector2Add(p1->current_position, Vector2Scale(correction, p2->mass / (p1->mass + p2->mass)));
+                p2->current_position = Vector2Subtract(p2->current_position, Vector2Scale(correction, p1->mass / (p1->mass + p2->mass)));
+                
+                delta = Vector2Subtract(p1->current_position, p2->current_position);
+                distance = Vector2Length(delta);
+                penetration_depth = fminf(radii_sum - distance, max_penetration);
+            }
+            
+            float elasticity = 0.6f;
+            Vector2 relative_velocity = Vector2Subtract(p1->velocity, p2->velocity);
+            float velocity_along_normal = Vector2DotProduct(relative_velocity, collision_normal);
+            
+            if (velocity_along_normal > 0) return;
+            
+            float p1_speed = Vector2Length(p1->velocity);
+            float p2_speed = Vector2Length(p2->velocity);
+            float rest_threshold = 0.2f;
+            
+            if (p1_speed < rest_threshold || p2_speed < rest_threshold) {
+                elasticity *= 0.8f;
+            }
+            
+            float impulse_magnitude = -(1 + elasticity) * velocity_along_normal;
+            impulse_magnitude /= p1->mass + p2->mass;
+            
+            // Limit the maximum impulse magnitude
+            float max_impulse = 5.0f;
+            impulse_magnitude = fminf(impulse_magnitude, max_impulse);
+            
+            Vector2 impulse = Vector2Scale(collision_normal, impulse_magnitude);
+            p1->velocity = Vector2Add(p1->velocity, Vector2Scale(impulse, 1 / p1->mass));
+            p2->velocity = Vector2Subtract(p2->velocity, Vector2Scale(impulse, 1 / p2->mass));
+            float vel_cap = 100.0f;
+            if (p1->velocity.x > vel_cap) {
+                p1->velocity.x = vel_cap;
+            }
+            if (p1->velocity.y > vel_cap) {
+                p1->velocity.y = vel_cap;
+            }
+            if (p2->velocity.x > vel_cap) {
+                p2->velocity.x = vel_cap;
+            }
+            if (p2->velocity.y > vel_cap) {
+                p2->velocity.y = vel_cap;
+            }
         }
     }
 }
 
-void FindCollisionsGrid(Grid* grid) {
-    for (int x = 1; x < grid->width - 1; ++x) {
-        for (int y = 1; y < grid->height - 1; ++y) {
+
+
+void FindCollisionsGrid(Grid* grid, float dt) {
+    for (int x = 0; x < grid->width; ++x) {
+        for (int y = 0; y < grid->height; ++y) {
             GridCell current_cell = grid->cells[y * grid->width + x];
-            // iterate on surrounding particles
-            if (current_cell.particle != NULL) {
+            
+            for (int i = 0; i < current_cell.particle_count; i++) {
+                Particle* p1 = current_cell.particles[i];
+                
+                // Check collisions with particles in the same cell
+                for (int j = i + 1; j < current_cell.particle_count; j++) {
+                    Particle* p2 = current_cell.particles[j];
+                    CheckCellCollisions(p1, p2, dt);
+                }
+                
                 for (int dx = -1; dx <= 1; ++dx) {
                     for (int dy = -1; dy <= 1; ++dy) {
-                        GridCell other_cell = grid->cells[(y + dy) * grid->width + (x + dx)];
-                        if (other_cell.particle) {
-                            CheckCellCollisions(current_cell.particle, other_cell.particle);
+                        if (dx == 0 && dy == 0) continue;
+                        
+                        int adj_x = x + dx;
+                        int adj_y = y + dy;
+                        
+                        if (adj_x >= 0 && adj_x < grid->width && adj_y >= 0 && adj_y < grid->height) {
+                            GridCell adjacent_cell = grid->cells[adj_y * grid->width + adj_x];
+                            
+                            for (int k = 0; k < adjacent_cell.particle_count; k++) {
+                                Particle* p2 = adjacent_cell.particles[k];
+                                CheckCellCollisions(p1, p2, dt);
+                            }
                         }
                     }
                 }
@@ -177,62 +205,14 @@ void BruteForceCollisions(Particle* particles, int num_particles) {
                 particles[i].current_position.x - particles[i].radius < particles[j].current_position.x + particles[j].radius &&
                 particles[i].current_position.y + particles[i].radius > particles[j].current_position.y - particles[j].radius &&
                 particles[i].current_position.y - particles[i].radius < particles[j].current_position.y + particles[j].radius) {
-                CheckCellCollisions(&particles[i], &particles[j]);
+                CheckCellCollisions(&particles[i], &particles[j], (1.0f/60.0f));
             }
         }
     }
 }
 
 
-/*
-void ResolveCollisions(Grid* grid, Particle* particles, int num_particles, float dt) {
-    
-    int num_substeps = 8;
-    float substep_dt = dt / num_substeps;
-    
-    // maybe substeps will improve stability
-    // but will definitely slow down the simulation
-    for (int substep = 0; substep < num_substeps; substep++) {
-        for (int i = 0; i < num_particles; i++) { // all particles
-            // get index of grid cell with particles
-            int cell_x = (int)(particles[i].current_position.x / grid->cell_size);
-            int cell_y = (int)(particles[i].current_position.y / grid->cell_size);
 
-            // check all cells adjacent
-            for (int y = cell_y - 1; y <= cell_y + 1; y++) {
-                for (int x = cell_x - 1; x <= cell_x + 1; x++) {
-                    // if next cell is within bounds
-                    if (x >= 1 && x < grid->width - 1 && y >= 1 && y < grid->height - 1) {
-                        int index = y * grid->width + x;
-                        // next cell idx
-                        Particle* other = grid->cells[index].particle;
-
-                        if (other && other != &particles[i]) {
-                            Vector2 delta = Vector2Subtract(particles[i].current_position, other->current_position);
-                            float distance = Vector2Length(delta);
-                            float overlap = particles[i].radius + other->radius - distance;
-
-                            if (overlap > 0) {
-                                Vector2 direction = Vector2Normalize(delta);
-                                float separation_distance = particles[i].radius + other->radius;
-                                Vector2 separation = Vector2Scale(direction, separation_distance);
-
-                                // Check if the next_position will remain positive after applying the separation
-                                if (particles[i].next_position.x + separation.x >= 0 && particles[i].next_position.y + separation.y >= 0) {
-                                    particles[i].next_position = Vector2Add(particles[i].next_position, separation);
-                                }
-                                if (other->next_position.x - separation.x >= 0 && other->next_position.y - separation.y >= 0) {
-                                    other->next_position = Vector2Subtract(other->next_position, separation);
-                                }
-                            }
-                        }                       
-                    }
-                }
-            }
-        }
-    }
-}
-*/
 
 
 #endif // PHYSICS_H

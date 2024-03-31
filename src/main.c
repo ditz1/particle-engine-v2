@@ -32,7 +32,7 @@ int main(void)
     int stage_mode = 2;
 
     // will do debug as default for now
-    int num_particles = 30;
+    int num_particles = 100;
     Particle* particles_in_scene = (Particle *)malloc(num_particles * sizeof(Particle));
     const int sim_screen_bounds_width = SCREEN_WIDTH;
     const int sim_screen_bounds_height = SCREEN_HEIGHT;
@@ -54,7 +54,7 @@ int main(void)
 
 
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "particle engine v2");
-    float dt = 0.0f;
+    const float dt = 1.0f / 60.0f;
     float time_elapsed = 0.0f;
     SetTargetFPS(60);               
 
@@ -77,7 +77,6 @@ int main(void)
     while (!WindowShouldClose())   
     {
         
-        dt = GetFrameTime();
 
         if (sim_should_start == 2) {
             free(particles_in_scene);
@@ -110,10 +109,10 @@ int main(void)
         }
 
             //ResolveCollisions(&grid, particles_in_scene, num_particles, dt);
-            FindCollisionsGrid(&grid);
+            UpdateGrid(&grid, particles_in_scene, num_particles);
+            FindCollisionsGrid(&grid, dt);
             //BruteForceCollisions(particles_in_scene, num_particles);
             UpdateParticles(particles_in_scene, num_particles, dt);
-            UpdateGrid(&grid, particles_in_scene, num_particles);
         }
         // both false means reset
         // have to figure out how to manage this memory because we 
@@ -127,15 +126,15 @@ int main(void)
         BeginDrawing();
             
             ClearBackground(sim_background_color);
-            RecordSimInput(&sim_is_running, &sim_should_start);
+            RecordSimInput(&sim_is_running, &sim_should_start, &stage_mode);
 
             if (!sim_is_running && sim_should_start){
                 DrawStartGui(SCREEN_WIDTH, SCREEN_HEIGHT);
             } else if (sim_is_running) {
-                DrawCollisionGrid(particles_in_scene[0].radius, sim_screen_bounds_width, sim_screen_bounds_height);
                 DrawParticleBounds(stage_mode, sim_screen_bounds_width, sim_screen_bounds_height);
                 DrawSimGui(SCREEN_WIDTH, SCREEN_HEIGHT);
                 DrawParticles(particles_in_scene, num_particles);
+                DrawCollisionGrid(particles_in_scene[0].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);
         
             }
 
