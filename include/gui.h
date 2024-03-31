@@ -5,7 +5,7 @@
 static Color font_color = { 225, 225, 225,  255 };
 static float time_elapsed = 0.0f;
 
-void DrawStartGui(int screen_width, int screen_height) {
+void DrawStartGui(int screen_width, int screen_height, int stage_mode) {
 
     font_color.a = 255;
     font_color.r = 230;
@@ -20,7 +20,7 @@ void DrawStartGui(int screen_width, int screen_height) {
     float gui_start_x = center_x - 300;
     float gui_start_y = center_y - 300;
     float gui_end_x = 600;
-    float gui_end_y = 300;
+    float gui_end_y = 400;
     int text_spacing_x = gui_start_x + 20;
     int text_spacing_y = gui_start_y + 40;
 
@@ -36,11 +36,15 @@ void DrawStartGui(int screen_width, int screen_height) {
 //void DrawRectangleRounded(Rectangle rec, float roundness, int segments, Color color);
 
     DrawRectangleRounded(gui_rect, 0.3f, 20, gui_color);
-    DrawRectangleRounded(select_box_rect_1, 0.3f, 20, RED);
+    
     
     DrawText("press space to start / stop simulation", text_spacing_x, text_spacing_y, start_font_size, font_color);
     DrawText("press r to reset simulation", text_spacing_x, text_spacing_y + 50, start_font_size, font_color);
-
+    DrawText("press 1 for screen bounds", text_spacing_x, text_spacing_y + 100, start_font_size, font_color);
+    DrawText("press 2 for sphere bounds", text_spacing_x, text_spacing_y + 150, start_font_size, font_color);
+    DrawText("press 3 for rect bounds", text_spacing_x, text_spacing_y + 200, start_font_size, font_color);
+    DrawText("press 4 for lots of particles", text_spacing_x, text_spacing_y + 250, start_font_size, font_color);
+    DrawText(TextFormat("selected mode: %d", stage_mode), text_spacing_x, text_spacing_y + 300, start_font_size, font_color);
 }
 
 
@@ -57,19 +61,23 @@ void DrawParticleBounds(int mode, int bounds_width, int bound_height){
     }
 }
 
-void DrawSimGui(int screen_width, int screen_height) { 
+void DrawSimGui(int screen_width, int screen_height, int num_particles, int mode, int sim_is_running, int sim_should_start) { 
 
     float dt = 1.0f/60.0f;
     int x_spacing = 20;
     int starting_y = 20;
-    int y_spacing = 50;
-    int running_font_size = 20;
+    int y_spacing = 30;
+    int running_font_size = 18;
     time_elapsed += dt;
+    Rectangle gui_rect = {5, 5, 225, 240};
+    DrawRectangleRounded(gui_rect, 0.3f, 20, GRAY);
     DrawText("particle engine v2", x_spacing, starting_y, running_font_size, font_color);
     DrawText("press 'r' to reset", x_spacing, starting_y + y_spacing, running_font_size, font_color);
     DrawText(TextFormat("dt: %.4f", dt), x_spacing, starting_y + y_spacing * 2, running_font_size, font_color);
     DrawText(TextFormat("time elapsed: %.4f", time_elapsed), x_spacing, starting_y + y_spacing * 3, running_font_size, font_color);
-    DrawFPS(x_spacing, starting_y + y_spacing * 4);
+    DrawText(TextFormat("num particles: %d", num_particles), x_spacing, starting_y + y_spacing * 4, running_font_size, font_color);
+    DrawText(TextFormat("stage mode: %d", mode), x_spacing, starting_y + y_spacing * 5, running_font_size, font_color);
+    DrawFPS(x_spacing, starting_y + y_spacing * 6);
 
 }
 
@@ -83,6 +91,17 @@ void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode)
 
     } else if (IsKeyPressed(KEY_ONE)){
         *stage_mode = 1;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+
+    } else if (IsKeyPressed(KEY_THREE)){
+        *stage_mode = 3;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+    } else if (IsKeyPressed(KEY_FOUR)){
+        *stage_mode = 4;
         printf("stage mode: %d\n", *stage_mode);
         *sim_should_start = 2;
         *sim_is_running = 0;

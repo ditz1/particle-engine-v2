@@ -12,7 +12,6 @@
 // at the same time its just a pointer 
 // so it should be fine
 
-
 typedef struct {
     int x;
     int y;
@@ -58,6 +57,7 @@ void DrawCollisionGrid(float particle_radius, int screen_bounds_width, int scree
             }
         }
     }
+    
 }
 
 

@@ -29,13 +29,14 @@ int main(void)
     // stage_mode 1 = screen bounds
     // stage_mode 2 = sphere bounds
     // stage_mode 3 = rect bounds
-    int stage_mode = 2;
+    int stage_mode = 1;
 
     // will do debug as default for now
-    int num_particles = 100;
+    int num_particles = 500;
     Particle* particles_in_scene = (Particle *)malloc(num_particles * sizeof(Particle));
-    const int sim_screen_bounds_width = SCREEN_WIDTH;
-    const int sim_screen_bounds_height = SCREEN_HEIGHT;
+
+    const int sim_screen_bounds_width = 900;
+    const int sim_screen_bounds_height = 900;
 
     // fix this
     // if (stage_mode == 3) {
@@ -61,7 +62,8 @@ int main(void)
     // add some function to do all this so we can reset the simulation
     // "init_simulation" or something
 
-    InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height);
+    double spawn_interval = 0.1;
+    InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
     int cell_size = (int)particles_in_scene[0].radius * 2; // diameter
     int grid_width = sim_screen_bounds_width / cell_size;
     int grid_height = sim_screen_bounds_height / cell_size;
@@ -76,14 +78,23 @@ int main(void)
 
     while (!WindowShouldClose())   
     {
-        
+
+        if (stage_mode == 1) {
+            num_particles = 500;
+        } else if (stage_mode == 2) {
+            num_particles = 250;
+        } else if (stage_mode == 3) {
+            num_particles = 1000;
+        } else if (stage_mode == 4) {
+            num_particles = 2000;
+        }
 
         if (sim_should_start == 2) {
             free(particles_in_scene);
             printf("freed particles\n");
             if ((particles_in_scene = (Particle *)malloc(num_particles * sizeof(Particle))) != NULL) {
                 printf("allocated new particles\n");
-                InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height);
+                InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
                 sim_should_start = 1;
                 printf("resetting simulation...\n");
             } else {
@@ -97,16 +108,24 @@ int main(void)
         //printf("sim_is_running: %d\n sim_should_start: %d\n", sim_is_running, sim_should_start);
         
         if (sim_is_running) {
-        switch (stage_mode) {
-            case 1: {
-                BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
-                break;    
+            switch (stage_mode) {
+                case 1: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;    
+                }
+                case 2: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
+                case 3: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
+                case 4: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
             }
-            case 2: {
-                BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
-                break;
-            }
-        }
 
             //ResolveCollisions(&grid, particles_in_scene, num_particles, dt);
             UpdateGrid(&grid, particles_in_scene, num_particles);
@@ -129,13 +148,12 @@ int main(void)
             RecordSimInput(&sim_is_running, &sim_should_start, &stage_mode);
 
             if (!sim_is_running && sim_should_start){
-                DrawStartGui(SCREEN_WIDTH, SCREEN_HEIGHT);
+                DrawStartGui(SCREEN_WIDTH, SCREEN_HEIGHT, stage_mode);
             } else if (sim_is_running) {
                 DrawParticleBounds(stage_mode, sim_screen_bounds_width, sim_screen_bounds_height);
-                DrawSimGui(SCREEN_WIDTH, SCREEN_HEIGHT);
+                DrawSimGui(SCREEN_WIDTH, SCREEN_HEIGHT, num_particles, stage_mode, sim_is_running, sim_should_start);
                 DrawParticles(particles_in_scene, num_particles);
-                DrawCollisionGrid(particles_in_scene[0].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);
-        
+                //DrawCollisionGrid(particles_in_scene[0].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);
             }
 
             

@@ -48,8 +48,26 @@ void BoundParticles(Particle *particles, int num_particles, int bounds_width, in
                 particles[i].velocity = Vector2Scale(tangent, dot);
             }
         }
+    } else if (mode == 3 || mode == 4) {
+        for (int i = 0; i < num_particles; i++) {
+            float dist_to_left = particles[i].current_position.x;
+            float dist_to_right = bounds_width - particles[i].current_position.x; 
+            float dist_to_bottom = bounds_height - particles[i].current_position.y;
+            float dist_to_top = particles[i].current_position.y;
+            if (dist_to_left < particles[i].radius) {
+                particles[i].current_position.x = particles[i].radius;
+            } else if (dist_to_right < particles[i].radius) {
+                particles[i].current_position.x = bounds_width - particles[i].radius;
+            } else if (dist_to_bottom < particles[i].radius) {
+                particles[i].current_position.y = bounds_height - particles[i].radius;
+            } 
+            /*else if (dist_to_top < particles[i].radius) {
+                particles[i].current_position.y = particles[i].radius;
+            }*/
+        }
     }
 }
+
 
 
 void UpdateParticleGravity(Particle *p, float dt) {
@@ -118,7 +136,7 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
                 penetration_depth = fminf(radii_sum - distance, max_penetration);
             }
             
-            float elasticity = 0.6f;
+            float elasticity = 0.4f;
             Vector2 relative_velocity = Vector2Subtract(p1->velocity, p2->velocity);
             float velocity_along_normal = Vector2DotProduct(relative_velocity, collision_normal);
             
@@ -136,13 +154,13 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
             impulse_magnitude /= p1->mass + p2->mass;
             
             // Limit the maximum impulse magnitude
-            float max_impulse = 5.0f;
+            float max_impulse = 10.0f;
             impulse_magnitude = fminf(impulse_magnitude, max_impulse);
             
             Vector2 impulse = Vector2Scale(collision_normal, impulse_magnitude);
             p1->velocity = Vector2Add(p1->velocity, Vector2Scale(impulse, 1 / p1->mass));
             p2->velocity = Vector2Subtract(p2->velocity, Vector2Scale(impulse, 1 / p2->mass));
-            float vel_cap = 100.0f;
+            float vel_cap = 30.0f;
             if (p1->velocity.x > vel_cap) {
                 p1->velocity.x = vel_cap;
             }
