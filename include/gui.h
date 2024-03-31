@@ -88,28 +88,35 @@ void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode)
         printf("stage mode: %d\n", *stage_mode);
         *sim_should_start = 2;
         *sim_is_running = 0;
+        time_elapsed = 0.0f;
 
     } else if (IsKeyPressed(KEY_ONE)){
         *stage_mode = 1;
         printf("stage mode: %d\n", *stage_mode);
         *sim_should_start = 2;
         *sim_is_running = 0;
+        time_elapsed = 0.0f;
 
     } else if (IsKeyPressed(KEY_THREE)){
         *stage_mode = 3;
         printf("stage mode: %d\n", *stage_mode);
         *sim_should_start = 2;
         *sim_is_running = 0;
+        time_elapsed = 0.0f;
+
     } else if (IsKeyPressed(KEY_FOUR)){
         *stage_mode = 4;
         printf("stage mode: %d\n", *stage_mode);
         *sim_should_start = 2;
         *sim_is_running = 0;
+        time_elapsed = 0.0f;
+
     }
     if (IsKeyPressed(KEY_R) && *sim_is_running == 0) {
         printf("asked to reset sim\n");
         *sim_should_start = 2;
         *sim_is_running = 0;
+        time_elapsed = 0.0f;
     
     } else if (IsKeyPressed(KEY_SPACE)) {
         printf("start/stop simulation\n");

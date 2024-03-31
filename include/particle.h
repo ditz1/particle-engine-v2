@@ -124,7 +124,7 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
         for (int i = 0; i < num_particles; i++) {
             
             float particle_offset = i * 2 * PI / num_particles;
-            particles[i].radius = particle_radius * 0.8;
+            particles[i].radius = particle_radius * 0.6;
             particles[i].velocity = (Vector2){0, 0};
             particles[i].acceleration = (Vector2){GetRandomValue(128, 255), (GetRandomValue(-1, 1))};
             particles[i].mass = particle_mass;

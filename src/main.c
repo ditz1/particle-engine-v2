@@ -82,14 +82,15 @@ int main(void)
         if (stage_mode == 1) {
             num_particles = 500;
         } else if (stage_mode == 2) {
-            num_particles = 250;
+            num_particles = 350;
         } else if (stage_mode == 3) {
-            num_particles = 1000;
+            num_particles = 1200;
         } else if (stage_mode == 4) {
-            num_particles = 2000;
+            num_particles = 3000;
         }
 
         if (sim_should_start == 2) {
+            time_elapsed = 0.0f;
             free(particles_in_scene);
             printf("freed particles\n");
             if ((particles_in_scene = (Particle *)malloc(num_particles * sizeof(Particle))) != NULL) {

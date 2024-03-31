@@ -136,7 +136,7 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
                 penetration_depth = fminf(radii_sum - distance, max_penetration);
             }
             
-            float elasticity = 0.4f;
+            float elasticity = 0.6f;
             Vector2 relative_velocity = Vector2Subtract(p1->velocity, p2->velocity);
             float velocity_along_normal = Vector2DotProduct(relative_velocity, collision_normal);
             
@@ -154,7 +154,7 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
             impulse_magnitude /= p1->mass + p2->mass;
             
             // Limit the maximum impulse magnitude
-            float max_impulse = 10.0f;
+            float max_impulse = 3.0f;
             impulse_magnitude = fminf(impulse_magnitude, max_impulse);
             
             Vector2 impulse = Vector2Scale(collision_normal, impulse_magnitude);
