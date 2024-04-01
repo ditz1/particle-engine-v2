@@ -7,48 +7,18 @@
 #include <grid.h>
 #include <stdio.h>
 
-static const float restitution = 0.6f;
-static const float dampening = 0.8f;
-static const float gravity = 75.0f;
+static const float restitution = 0.2f;
+static const float dampening = 0.98f;
+static const float gravity = 250.0f;
 
 void BoundParticles(Particle *particles, int num_particles, int bounds_width, int bounds_height, int mode) {
     
     float bounce_factor = -1 * Clamp(((1.0f / particles[0].mass)), 0.1f, 0.8f);
-
-    if (mode == 1){
-        for (int i = 0; i < num_particles; i++) {
-            float dist_to_left = particles[i].current_position.x;
-            float dist_to_right = bounds_width - particles[i].current_position.x; 
-            float dist_to_bottom = bounds_height - particles[i].current_position.y;
-            float dist_to_top = particles[i].current_position.y;
-            if (dist_to_left < particles[i].radius) {
-                particles[i].current_position.x = particles[i].radius;
-            } else if (dist_to_right < particles[i].radius) {
-                particles[i].current_position.x = bounds_width - particles[i].radius;
-            } else if (dist_to_bottom < particles[i].radius) {
-                particles[i].current_position.y = bounds_height - particles[i].radius;
-            } else if (dist_to_top < particles[i].radius) {
-                particles[i].current_position.y = particles[i].radius;
-            }
-        }
-    } else if (mode == 2) {
-        float circle_center_x = bounds_width / 2.0f;
-        float circle_center_y = bounds_height / 2.0f;
-        Vector2 circle_center = (Vector2) {circle_center_x, circle_center_y};
-        float circle_radius =  400.0f;
-        for (int i = 0; i < num_particles; i++) {
-            const float distance = Vector2Distance(particles[i].current_position, circle_center);
-            if (distance > circle_radius - particles[i].radius){
-                const Vector2 dir = Vector2Subtract(particles[i].current_position, circle_center);
-                const Vector2 norm = Vector2Normalize(dir); 
-                particles[i].current_position = Vector2Add(circle_center, Vector2Scale(norm, circle_radius - particles[i].radius));
-
-                Vector2 tangent = (Vector2){ -norm.y, norm.x };
-                float dot = Vector2DotProduct(particles[i].velocity, tangent);
-                particles[i].velocity = Vector2Scale(tangent, dot);
-            }
-        }
-    } else if (mode == 3 || mode == 4 || mode == 5 || mode == 6) {
+    switch (mode) {
+    case 6:
+    case 5:
+    case 4:
+    case 3: {
         for (int i = 0; i < num_particles; i++) {
             float dist_to_left = particles[i].current_position.x;
             float dist_to_right = bounds_width - particles[i].current_position.x; 
@@ -65,6 +35,44 @@ void BoundParticles(Particle *particles, int num_particles, int bounds_width, in
                 particles[i].current_position.y = particles[i].radius;
             }*/
         }
+        break;
+    }
+    case 1: {
+        for (int i = 0; i < num_particles; i++) {
+            float dist_to_left = particles[i].current_position.x;
+            float dist_to_right = bounds_width - particles[i].current_position.x; 
+            float dist_to_bottom = bounds_height - particles[i].current_position.y;
+            float dist_to_top = particles[i].current_position.y;
+            if (dist_to_left < particles[i].radius) {
+                particles[i].current_position.x = particles[i].radius;
+            } else if (dist_to_right < particles[i].radius) {
+                particles[i].current_position.x = bounds_width - particles[i].radius;
+            } else if (dist_to_bottom < particles[i].radius) {
+                particles[i].current_position.y = bounds_height - particles[i].radius;
+            } else if (dist_to_top < particles[i].radius) {
+                particles[i].current_position.y = particles[i].radius;
+            }
+        }
+        break;
+    } case 2: {
+        float circle_center_x = bounds_width / 2.0f;
+        float circle_center_y = bounds_height / 2.0f;
+        Vector2 circle_center = (Vector2) {circle_center_x, circle_center_y};
+        float circle_radius =  400.0f;
+        for (int i = 0; i < num_particles; i++) {
+            const float distance = Vector2Distance(particles[i].current_position, circle_center);
+            if (distance > circle_radius - particles[i].radius){
+                const Vector2 dir = Vector2Subtract(particles[i].current_position, circle_center);
+                const Vector2 norm = Vector2Normalize(dir); 
+                particles[i].current_position = Vector2Add(circle_center, Vector2Scale(norm, circle_radius - particles[i].radius));
+
+                Vector2 tangent = (Vector2){ -norm.y, norm.x };
+                float dot = Vector2DotProduct(particles[i].velocity, tangent);
+                particles[i].velocity = Vector2Scale(tangent, dot);
+            }
+        }
+        break;
+    }
     }
 }
 
@@ -136,7 +144,7 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
                 penetration_depth = fminf(radii_sum - distance, max_penetration);
             }
             
-            float elasticity = 0.5f;
+            float elasticity = 0.8f;
             Vector2 relative_velocity = Vector2Subtract(p1->velocity, p2->velocity);
             float velocity_along_normal = Vector2DotProduct(relative_velocity, collision_normal);
             
@@ -154,13 +162,13 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
             impulse_magnitude /= p1->mass + p2->mass;
             
             // Limit the maximum impulse magnitude
-            float max_impulse = 5.0f;
+            float max_impulse = 3.0f;
             impulse_magnitude = fminf(impulse_magnitude, max_impulse);
             
             Vector2 impulse = Vector2Scale(collision_normal, impulse_magnitude);
             p1->velocity = Vector2Add(p1->velocity, Vector2Scale(impulse, 1 / p1->mass));
             p2->velocity = Vector2Subtract(p2->velocity, Vector2Scale(impulse, 1 / p2->mass));
-            float vel_cap = 15.0f;
+            float vel_cap = 10.0f;
             if (p1->velocity.x > vel_cap) {
                 p1->velocity.x = vel_cap;
             }

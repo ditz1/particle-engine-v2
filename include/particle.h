@@ -24,14 +24,15 @@ typedef struct Particle
 
 
 void InitParticles(Particle *particles, int num_particles, int screen_width, int screen_height, int mode) {
+    float dt = 1.0f/120.0f;
     float particle_radius = 9.0f;
     float particle_mass = 1.0f;
     float rand_num_1 = GetRandomValue(180, 255);
     printf("rand_num_1: %f\n", rand_num_1);
     float rand_num_2 = GetRandomValue(180, 255);
     printf("rand_num_2: %f\n", rand_num_2);
-    
-    if (mode == 1) {
+    switch (mode){
+        case 1: {
         for (int i = 0; i < num_particles; i++) {
             particles[i].radius = particle_radius * 1.2;
             particles[i].velocity = (Vector2){0, 0};
@@ -68,7 +69,8 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             (unsigned char)(255 * (1 - t)),
             255
         };*/
-    } else if (mode == 2) {
+        break;
+    } case 2: {
         for (int i = 0; i < num_particles; i++) {
             float circle_center_x = screen_width / 2.0f;
             float circle_center_y = screen_height / 2.0f;
@@ -100,9 +102,10 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             particles[i].idx = i;
             particles[i].cell_index_x = 0;
             particles[i].cell_index_y = 0;
-        } 
+        }
+        break; 
     
-    } else if (mode == 3) {
+    } case 3: {
         printf("particle stream activated\n");
         for (int i = 0; i < num_particles; i++) {
             particles[i].radius = particle_radius;
@@ -117,8 +120,8 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             particles[i].cell_index_x = 0;
             particles[i].cell_index_y = 0;
         }
-    }
-    else if (mode == 4) {
+        break;
+    } case 4: {
         printf("particle stream activated\n");
         
         for (int i = 0; i < num_particles; i++) {
@@ -142,17 +145,22 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             particles[i].cell_index_x = 0;
             particles[i].cell_index_y = 0;
         }
-    }
-    else if (mode == 5) {
+        break;
+    } case 5: {
         printf("particle stream activated\n");
-        
+        float amplitude = 350.0f;
+        float center = 450.0f;
+        float freq = 8.0f;
         for (int i = 0; i < num_particles; i++) {
-            
+            float phase_offset = (float)i/num_particles * 2 * PI;
+            float wave_position = sinf(freq * dt + phase_offset);
+            float new_x = center + wave_position * amplitude;
+            //printf("new x: %f\n", new_x);
             particles[i].radius = particle_radius * 0.7f;
             particles[i].velocity = (Vector2){0, 0};
-            particles[i].acceleration = (Vector2){GetRandomValue(128, 255), (GetRandomValue(-1, 1))};
+            particles[i].acceleration = (Vector2){0, 0};
             particles[i].mass = particle_mass;
-            particles[i].current_position = (Vector2){ particles[i].radius + 1.0f, -12.0f * i};      
+            particles[i].current_position = (Vector2){ new_x + particles[i].radius, -12.0f * i};      
             particles[i].next_position = particles[i].current_position;
             particles[i].last_position = particles[i].current_position;
             particles[i].color = (Color){GetRandomValue(0, 0),  GetRandomValue(0, rand_num_1) , GetRandomValue(0, rand_num_2), 255};
@@ -160,29 +168,35 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             particles[i].cell_index_x = 0;
             particles[i].cell_index_y = 0;
         }
-    } else if (mode == 6) {
+        break;
+    } case 6: {
         printf("particle stream activated\n");
-        
+        float amplitude = 350.0f;
+        float center = 450.0f;
+        float freq = 28.0f;
         for (int i = 0; i < num_particles; i++) {
-            
-            particles[i].radius = particle_radius * 0.6f;
+            float phase_offset = (float)i/num_particles * 2 * PI;
+            float wave_position = sinf(freq * dt + phase_offset);
+            float new_x = center + wave_position * amplitude;
+            particles[i].radius = particle_radius * 0.5f;
             particles[i].velocity = (Vector2){0, 0};
-            particles[i].acceleration = (Vector2){GetRandomValue(-128, 128), (GetRandomValue(-1, 1))};
+            particles[i].acceleration = (Vector2){0, 0};
             particles[i].mass = particle_mass;
-            particles[i].current_position = (Vector2){ 300, -12.0f * i};      
+            particles[i].current_position = (Vector2){ new_x, -15.0f * i};      
             particles[i].next_position = particles[i].current_position;
             particles[i].last_position = particles[i].current_position;
-            particles[i].color = (Color){GetRandomValue(0, rand_num_2),  GetRandomValue(0, rand_num_1) , GetRandomValue(0, 30), 255};
+            particles[i].color = (Color){GetRandomValue(150, 255),  GetRandomValue(90, 180) , GetRandomValue(0, 30), 255};
             particles[i].idx = i;
             particles[i].cell_index_x = 0;
             particles[i].cell_index_y = 0;
         
+            }
+        break;
         }
     }
 }
 
-void DrawParticle(Particle *particle)
-{
+void DrawParticle(Particle *particle) {
     //Color DEBUG_COLOR = GREEN;
     //DEBUG_COLOR.a = 150;
     // white border around particles

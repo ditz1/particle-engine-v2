@@ -5,7 +5,7 @@
 static Color font_color = { 225, 225, 225,  255 };
 static float time_elapsed = 0.0f;
 
-void DrawStartGui(int screen_width, int screen_height, int stage_mode) {
+void DrawStartGui(int screen_width, int screen_height, int stage_mode, int loading) {
 
     font_color.a = 255;
     font_color.r = 230;
@@ -46,6 +46,9 @@ void DrawStartGui(int screen_width, int screen_height, int stage_mode) {
     DrawText("press 4 for lots of particles", text_spacing_x, text_spacing_y + 250, start_font_size, font_color);
     DrawText("press 5 for even more particles (will lag)", text_spacing_x, text_spacing_y + 300, start_font_size, font_color);
     DrawText(TextFormat("selected mode: %d", stage_mode), text_spacing_x + 30, text_spacing_y + 350, start_font_size, font_color);
+    if (loading == 1) {
+        DrawText("loading...", text_spacing_x + 30, text_spacing_y + 450, start_font_size, RAYWHITE);
+    }
 }
 
 
@@ -82,7 +85,7 @@ void DrawSimGui(int screen_width, int screen_height, int num_particles, int mode
 
 }
 
-void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode)  {
+void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode, int* debug_mode)  {
     // reset simulation
     if (IsKeyPressed(KEY_TWO)){
         *stage_mode = 2;
@@ -142,6 +145,16 @@ void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode)
         } else if (*sim_is_running == 0 && *sim_should_start == 1){
             *sim_is_running = 1;
             *sim_should_start = 0;
+        }
+    }
+
+    if (IsKeyPressed(KEY_D)) {
+        if (*debug_mode == 1) {
+            *debug_mode = 0;
+            printf("debug mode off\n");
+        } else {
+            *debug_mode = 1;
+            printf("debug mode on\n");
         }
     }
 }
