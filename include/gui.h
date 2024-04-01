@@ -40,9 +40,9 @@ void DrawStartGui(int screen_width, int screen_height, int stage_mode, int loadi
     
     DrawText("press space to start / stop simulation", text_spacing_x, text_spacing_y, start_font_size, font_color);
     DrawText("press r to reset simulation", text_spacing_x, text_spacing_y + 40, start_font_size, font_color);
-    DrawText("press 1 for screen bounds", text_spacing_x, text_spacing_y + 80, start_font_size, font_color);
+    DrawText("press 1 for testing bounds", text_spacing_x, text_spacing_y + 80, start_font_size, font_color);
     DrawText("press 2 for sphere bounds", text_spacing_x, text_spacing_y + 120, start_font_size, font_color);
-    DrawText("press 3 for rect bounds", text_spacing_x, text_spacing_y + 160, start_font_size, font_color);
+    DrawText("press 3 for some particles", text_spacing_x, text_spacing_y + 160, start_font_size, font_color);
     DrawText("press 4 for lots of particles", text_spacing_x, text_spacing_y + 200, start_font_size, font_color);
     DrawText("press 5 for even more particles (will lag)", text_spacing_x, text_spacing_y + 240, start_font_size, font_color);
     DrawText("press 6 for too many particles (will lag even more)", text_spacing_x, text_spacing_y + 280, start_font_size, font_color);
@@ -81,7 +81,7 @@ void DrawSimGui(int screen_width, int screen_height, int num_particles, int mode
     Rectangle gui_rect = {5, 5, 225, 240};
     DrawRectangleRounded(gui_rect, 0.3f, 20, GRAY);
     DrawText("particle engine v2", x_spacing, starting_y, running_font_size, font_color);
-    DrawText("press 'r' to reset", x_spacing, starting_y + y_spacing, running_font_size, font_color);
+    DrawText("press 'space' to pause", x_spacing, starting_y + y_spacing, running_font_size, font_color);
     DrawText(TextFormat("dt: %.4f", dt), x_spacing, starting_y + y_spacing * 2, running_font_size, font_color);
     DrawText(TextFormat("time elapsed: %.4f", time_elapsed), x_spacing, starting_y + y_spacing * 3, running_font_size, font_color);
     DrawText(TextFormat("num particles: %d", num_particles), x_spacing, starting_y + y_spacing * 4, running_font_size, font_color);

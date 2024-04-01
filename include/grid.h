@@ -39,6 +39,7 @@ void DrawCollisionGrid(float particle_radius, int screen_bounds_width, int scree
     }
     
     Color PARTICLE_COLOR = RED;
+    PARTICLE_COLOR.a = 80;
     
     float circle_radius = particle_radius * 0.25f;
     
@@ -53,7 +54,11 @@ void DrawCollisionGrid(float particle_radius, int screen_bounds_width, int scree
                     (float)(x * grid->cell_size + grid->cell_size / 2),
                     (float)(y * grid->cell_size + grid->cell_size / 2)
                 };
-                DrawCircleV(cell_center, circle_radius, PARTICLE_COLOR);
+                float x_start = cell_center.x - grid->cell_size / 2;
+                float y_start = cell_center.y - grid->cell_size / 2;
+                Vector2 start = {x_start, y_start};
+                DrawRectangleV(start, (Vector2) {grid->cell_size, grid->cell_size}, PARTICLE_COLOR);
+
             }
         }
     }
@@ -70,6 +75,8 @@ void DrawCollisionGridKahuna(float particle_radius, int screen_bounds_width, int
 
     Color SMALL_PARTICLE_COLOR = RED;
     Color BIG_PARTICLE_COLOR = BLUE;
+    SMALL_PARTICLE_COLOR.a = 80;
+    BIG_PARTICLE_COLOR.a = 80;
     float small_circle_radius = particle_radius * 0.25f;
     float big_circle_radius = particle_radius * 0.5f;
 
@@ -83,10 +90,16 @@ void DrawCollisionGridKahuna(float particle_radius, int screen_bounds_width, int
 
                 if (particle->idx == 0) {
                     // Draw a larger circle for the big particle
-                    DrawCircleV(cell_center, big_circle_radius, BIG_PARTICLE_COLOR);
+                    float x_start = cell_center.x - grid->cell_size / 2;
+                    float y_start = cell_center.y - grid->cell_size / 2;
+                    Vector2 start = {x_start, y_start};
+                    DrawRectangleV(start, (Vector2) {grid->cell_size, grid->cell_size}, SMALL_PARTICLE_COLOR);
                 } else {
                     // Draw a smaller circle for the smaller particles
-                    DrawCircleV(cell_center, small_circle_radius, SMALL_PARTICLE_COLOR);
+                    float x_start = cell_center.x - grid->cell_size / 2;
+                    float y_start = cell_center.y - grid->cell_size / 2;
+                    Vector2 start = {x_start, y_start};
+                    DrawRectangleV(start, (Vector2) {grid->cell_size, grid->cell_size}, BIG_PARTICLE_COLOR);
                 }
             }
         }
@@ -104,6 +117,8 @@ void DrawCollisionGridMeteors(float particle_radius, int screen_bounds_width, in
 
     Color REGULAR_PARTICLE_COLOR = GREEN;
     Color METEOR_PARTICLE_COLOR = RED;
+    METEOR_PARTICLE_COLOR.a = 80;
+    REGULAR_PARTICLE_COLOR.a = 80;
     float regular_circle_radius = particle_radius * 0.25f;
     float meteor_circle_radius = particle_radius * 0.5f;
 
@@ -116,11 +131,17 @@ void DrawCollisionGridMeteors(float particle_radius, int screen_bounds_width, in
                 Vector2 cell_center = { (float)(x * grid->cell_size + grid->cell_size / 2), (float)(y * grid->cell_size + grid->cell_size / 2) };
 
                 if (particle->idx >= 0 && particle->idx < 20) {
-                    // Draw larger circles for meteors (particles with indices 0-19)
-                    DrawCircleV(cell_center, meteor_circle_radius, METEOR_PARTICLE_COLOR);
+                    // Draw a larger circle for the big particle
+                    float x_start = cell_center.x - grid->cell_size / 2;
+                    float y_start = cell_center.y - grid->cell_size / 2;
+                    Vector2 start = {x_start, y_start};
+                    DrawRectangleV(start, (Vector2) {grid->cell_size, grid->cell_size}, REGULAR_PARTICLE_COLOR);
                 } else {
-                    // Draw smaller circles for regular particles (indices 20 and above)
-                    DrawCircleV(cell_center, regular_circle_radius, REGULAR_PARTICLE_COLOR);
+                    // Draw a smaller circle for the smaller particles
+                    float x_start = cell_center.x - grid->cell_size / 2;
+                    float y_start = cell_center.y - grid->cell_size / 2;
+                    Vector2 start = {x_start, y_start};
+                    DrawRectangleV(start, (Vector2) {grid->cell_size, grid->cell_size}, METEOR_PARTICLE_COLOR);
                 }
             }
         }

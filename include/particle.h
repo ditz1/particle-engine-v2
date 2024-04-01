@@ -243,10 +243,10 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             // idx 0 - 19 are meteors
             // meteors
             for (int i = 0; i < 20; i++){
-                particles[i].radius = particle_radius * 5.0f;
+                particles[i].radius = particle_radius * 8.0f;
                 particles[i].velocity = (Vector2){0, 0};
                 particles[i].acceleration = (Vector2){0, 0};
-                particles[i].mass = particle_mass * 35.0f;
+                particles[i].mass = particle_mass * 55.0f;
                 particles[i].current_position = (Vector2) {GetRandomValue(100, 800), -4000 - (i * 3500)};
                 particles[i].next_position = particles[i].current_position;
                 particles[i].last_position = particles[i].current_position;
@@ -291,7 +291,7 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             // idx 0 - 19 are meteors
             // meteors
             for (int i = 0; i < 40; i++){
-                particles[i].radius = particle_radius * 3.0f;
+                particles[i].radius = particle_radius * 5.0f;
                 particles[i].velocity = (Vector2){0, 0};
                 particles[i].acceleration = (Vector2){0, 0};
                 particles[i].mass = particle_mass * 25.0f;
@@ -305,7 +305,7 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             }
 
             for (int i = 40; i < num_particles; i++) {
-                particles[i].radius = particle_radius * 0.75f;
+                particles[i].radius = particle_radius * 0.8f;
                 particles[i].velocity = (Vector2){0, 0};
                 particles[i].acceleration = (Vector2){0, 0};
                 particles[i].mass = particle_mass * 0.7f;        

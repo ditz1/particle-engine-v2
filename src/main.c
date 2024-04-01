@@ -81,9 +81,9 @@ int main(void)
     {
 
         if (stage_mode == 1) {
-            num_particles = 500;
+            num_particles = 1000;
         } else if (stage_mode == 2) {
-            num_particles = 350;
+            num_particles = 700;
         } else if (stage_mode == 3) {
             num_particles = 3000;
         } else if (stage_mode == 4) {
@@ -97,7 +97,7 @@ int main(void)
         } else if (stage_mode == 8) {
             num_particles = 3500 + 20;
         } else if (stage_mode == 9) {
-            num_particles = 4000 + 40;
+            num_particles = 3000 + 40;
         }
 
         if (sim_should_start == 2) {
