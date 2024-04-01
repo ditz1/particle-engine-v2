@@ -193,6 +193,148 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
             }
         break;
         }
+        case 7: {
+            printf("big particle into little particles\n");
+            for (int i = 1; i < num_particles; i++) {
+            particles[i].radius = particle_radius * 1.4;
+            particles[i].velocity = (Vector2){0, 0};
+            particles[i].acceleration = (Vector2){0, 0};
+            particles[i].mass = particle_mass * 0.7f;        
+            particles[i].current_position = (Vector2) {
+                GetRandomValue(particles[i].radius, screen_width - particles[i].radius),
+                GetRandomValue(screen_height - particles[i].radius, screen_height - 500)
+            };        
+            for (int j = 1; j < i; j++) {
+                Vector2 delta = Vector2Subtract(particles[i].current_position, particles[j].current_position);
+                float distance = Vector2Length(delta);
+                float radii_sum = particles[i].radius + particles[j].radius;            
+                while (distance < radii_sum) {
+                    particles[i].current_position = (Vector2) {
+                        GetRandomValue(particles[i].radius, screen_width - particles[i].radius),
+                        GetRandomValue(particles[i].radius, screen_height - particles[i].radius)
+                    };
+                    delta = Vector2Subtract(particles[i].current_position, particles[j].current_position);
+                    distance = Vector2Length(delta);
+                }
+            }
+            particles[i].next_position = particles[i].current_position;
+            particles[i].last_position = particles[i].current_position;
+            particles[i].color = (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255};
+            particles[i].idx = i;
+            particles[i].cell_index_x = 0;
+            particles[i].cell_index_y = 0;
+            }
+            // the big one
+            particles[0].radius = particle_radius * 16.0f;
+            particles[0].velocity = (Vector2){0, 0};
+            particles[0].acceleration = (Vector2){0, 0};
+            particles[0].mass = particle_mass * 75.0f;
+            particles[0].current_position = (Vector2) {screen_width / 2, -3000 };
+            particles[0].next_position = particles[0].current_position;
+            particles[0].last_position = particles[0].current_position;
+            particles[0].color = (Color){GetRandomValue(0, 255), GetRandomValue(0, 255), GetRandomValue(0, 255), 255};
+            particles[0].idx = 0;
+            particles[0].cell_index_x = 0;
+            particles[0].cell_index_y = 0;
+            break;
+        }
+        case 8: {
+            printf("meteor shower\n");
+            // idx 0 - 19 are meteors
+            // meteors
+            for (int i = 0; i < 20; i++){
+                particles[i].radius = particle_radius * 5.0f;
+                particles[i].velocity = (Vector2){0, 0};
+                particles[i].acceleration = (Vector2){0, 0};
+                particles[i].mass = particle_mass * 35.0f;
+                particles[i].current_position = (Vector2) {GetRandomValue(100, 800), -4000 - (i * 3500)};
+                particles[i].next_position = particles[i].current_position;
+                particles[i].last_position = particles[i].current_position;
+                particles[i].color = (Color){GetRandomValue(70, 255), GetRandomValue(0, 60), GetRandomValue(0, 60), 255};
+                particles[i].idx = 0;
+                particles[i].cell_index_x = 0;
+                particles[i].cell_index_y = 0;
+            }
+
+            for (int i = 20; i < num_particles; i++) {
+                particles[i].radius = particle_radius * 0.8f;
+                particles[i].velocity = (Vector2){0, 0};
+                particles[i].acceleration = (Vector2){0, 0};
+                particles[i].mass = particle_mass * 0.7f;        
+                particles[i].current_position = (Vector2) {
+                    GetRandomValue(particles[i].radius, screen_width - particles[i].radius),
+                    GetRandomValue(screen_height - particles[i].radius, screen_height - 500)
+                };        
+                for (int j = 1; j < i; j++) {
+                    Vector2 delta = Vector2Subtract(particles[i].current_position, particles[j].current_position);
+                    float distance = Vector2Length(delta);
+                    float radii_sum = particles[i].radius + particles[j].radius;            
+                    while (distance < radii_sum) {
+                        particles[i].current_position = (Vector2) {
+                            GetRandomValue(particles[i].radius, screen_width - particles[i].radius),
+                            GetRandomValue(particles[i].radius, screen_height - particles[i].radius)
+                        };
+                        delta = Vector2Subtract(particles[i].current_position, particles[j].current_position);
+                        distance = Vector2Length(delta);
+                    }
+                }
+                particles[i].next_position = particles[i].current_position;
+                particles[i].last_position = particles[i].current_position;
+                particles[i].color = (Color){GetRandomValue(0, 80), GetRandomValue(0,80), GetRandomValue(50, 255), 255};
+                particles[i].idx = i;
+                particles[i].cell_index_x = 0;
+                particles[i].cell_index_y = 0;
+            }
+            break;
+        } case 9: {
+            printf("meteor shower 2\n");
+            // idx 0 - 19 are meteors
+            // meteors
+            for (int i = 0; i < 40; i++){
+                particles[i].radius = particle_radius * 3.0f;
+                particles[i].velocity = (Vector2){0, 0};
+                particles[i].acceleration = (Vector2){0, 0};
+                particles[i].mass = particle_mass * 25.0f;
+                particles[i].current_position = (Vector2) {GetRandomValue(100, 800), -3000 - (i * 2000)};
+                particles[i].next_position = particles[i].current_position;
+                particles[i].last_position = particles[i].current_position;
+                particles[i].color = (Color){GetRandomValue(128, 255), GetRandomValue(0, 60), GetRandomValue(128, 255), 255};
+                particles[i].idx = 0;
+                particles[i].cell_index_x = 0;
+                particles[i].cell_index_y = 0;
+            }
+
+            for (int i = 40; i < num_particles; i++) {
+                particles[i].radius = particle_radius * 0.75f;
+                particles[i].velocity = (Vector2){0, 0};
+                particles[i].acceleration = (Vector2){0, 0};
+                particles[i].mass = particle_mass * 0.7f;        
+                particles[i].current_position = (Vector2) {
+                    GetRandomValue(particles[i].radius, screen_width - particles[i].radius),
+                    GetRandomValue(screen_height - particles[i].radius, screen_height - 500)
+                };        
+                for (int j = 1; j < i; j++) {
+                    Vector2 delta = Vector2Subtract(particles[i].current_position, particles[j].current_position);
+                    float distance = Vector2Length(delta);
+                    float radii_sum = particles[i].radius + particles[j].radius;            
+                    while (distance < radii_sum) {
+                        particles[i].current_position = (Vector2) {
+                            GetRandomValue(particles[i].radius, screen_width - particles[i].radius),
+                            GetRandomValue(particles[i].radius, screen_height - particles[i].radius)
+                        };
+                        delta = Vector2Subtract(particles[i].current_position, particles[j].current_position);
+                        distance = Vector2Length(delta);
+                    }
+                }
+                particles[i].next_position = particles[i].current_position;
+                particles[i].last_position = particles[i].current_position;
+                particles[i].color = (Color){GetRandomValue(0, 80), GetRandomValue(50,255), GetRandomValue(50, 255), 255};
+                particles[i].idx = i;
+                particles[i].cell_index_x = 0;
+                particles[i].cell_index_y = 0;
+            }
+            break;
+        }
     }
 }
 

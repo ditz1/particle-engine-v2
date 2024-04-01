@@ -15,6 +15,9 @@ void BoundParticles(Particle *particles, int num_particles, int bounds_width, in
     
     float bounce_factor = -1 * Clamp(((1.0f / particles[0].mass)), 0.1f, 0.8f);
     switch (mode) {
+    case 9:
+    case 8:
+    case 7:
     case 6:
     case 5:
     case 4:

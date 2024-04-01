@@ -16,12 +16,12 @@ void DrawStartGui(int screen_width, int screen_height, int stage_mode, int loadi
     gui_color.g -= 50;    
     float center_x = screen_width / 2.0f;
     float center_y = screen_height / 2.0f;
-    int start_font_size = 26;
-    float gui_start_x = center_x - 300;
+    int start_font_size = 22;
+    float gui_start_x = center_x - 400;
     float gui_start_y = center_y - 300;
-    float gui_end_x = 600;
-    float gui_end_y = 450;
-    int text_spacing_x = gui_start_x + 20;
+    float gui_end_x = 800;
+    float gui_end_y = 600;
+    int text_spacing_x = gui_start_x + 120;
     int text_spacing_y = gui_start_y + 40;
 
     /*typedef struct Rectangle {
@@ -39,15 +39,20 @@ void DrawStartGui(int screen_width, int screen_height, int stage_mode, int loadi
     
     
     DrawText("press space to start / stop simulation", text_spacing_x, text_spacing_y, start_font_size, font_color);
-    DrawText("press r to reset simulation", text_spacing_x, text_spacing_y + 50, start_font_size, font_color);
-    DrawText("press 1 for screen bounds", text_spacing_x, text_spacing_y + 100, start_font_size, font_color);
-    DrawText("press 2 for sphere bounds", text_spacing_x, text_spacing_y + 150, start_font_size, font_color);
-    DrawText("press 3 for rect bounds", text_spacing_x, text_spacing_y + 200, start_font_size, font_color);
-    DrawText("press 4 for lots of particles", text_spacing_x, text_spacing_y + 250, start_font_size, font_color);
-    DrawText("press 5 for even more particles (will lag)", text_spacing_x, text_spacing_y + 300, start_font_size, font_color);
-    DrawText(TextFormat("selected mode: %d", stage_mode), text_spacing_x + 30, text_spacing_y + 350, start_font_size, font_color);
+    DrawText("press r to reset simulation", text_spacing_x, text_spacing_y + 40, start_font_size, font_color);
+    DrawText("press 1 for screen bounds", text_spacing_x, text_spacing_y + 80, start_font_size, font_color);
+    DrawText("press 2 for sphere bounds", text_spacing_x, text_spacing_y + 120, start_font_size, font_color);
+    DrawText("press 3 for rect bounds", text_spacing_x, text_spacing_y + 160, start_font_size, font_color);
+    DrawText("press 4 for lots of particles", text_spacing_x, text_spacing_y + 200, start_font_size, font_color);
+    DrawText("press 5 for even more particles (will lag)", text_spacing_x, text_spacing_y + 240, start_font_size, font_color);
+    DrawText("press 6 for too many particles (will lag even more)", text_spacing_x, text_spacing_y + 280, start_font_size, font_color);
+    DrawText("press 7 for the big one", text_spacing_x, text_spacing_y + 320, start_font_size, font_color);
+    DrawText("press 8 for meteor shower", text_spacing_x, text_spacing_y + 360, start_font_size, font_color);\
+    DrawText("press 9 for meteor shower 2", text_spacing_x, text_spacing_y + 400, start_font_size, font_color);
+    DrawText("press d to toggle debug mode (might lag)", text_spacing_x, text_spacing_y + 440, start_font_size, font_color);
+    DrawText(TextFormat("selected mode: %d", stage_mode), text_spacing_x + 170, text_spacing_y + 480, start_font_size, GREEN);
     if (loading == 1) {
-        DrawText("loading...", text_spacing_x + 30, text_spacing_y + 450, start_font_size, RAYWHITE);
+        DrawText("loading...", text_spacing_x + 30, text_spacing_y + 550, start_font_size, RAYWHITE);
     }
 }
 
@@ -129,7 +134,26 @@ void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode,
         *sim_is_running = 0;
         time_elapsed = 0.0f;
 
-    }
+    } else if (IsKeyPressed(KEY_SEVEN)){
+        *stage_mode = 7;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+        time_elapsed = 0.0f;
+    } else if (IsKeyPressed(KEY_EIGHT)){
+        *stage_mode = 8;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+        time_elapsed = 0.0f;
+    } else if (IsKeyPressed(KEY_NINE)){
+        *stage_mode = 9;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+        time_elapsed = 0.0f;
+    } else
+
     if (IsKeyPressed(KEY_R) && *sim_is_running == 0) {
         printf("asked to reset sim\n");
         *sim_should_start = 2;

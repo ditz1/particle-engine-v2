@@ -92,6 +92,12 @@ int main(void)
             num_particles = 8000;
         } else if (stage_mode == 6) {
             num_particles = 12000;
+        } else if (stage_mode == 7) {
+            num_particles = 800 + 1;
+        } else if (stage_mode == 8) {
+            num_particles = 3500 + 20;
+        } else if (stage_mode == 9) {
+            num_particles = 4000 + 40;
         }
 
         if (sim_should_start == 2) {
@@ -104,6 +110,13 @@ int main(void)
                 InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
                 //update grid
                 int cell_size = (int)particles_in_scene[0].radius * 2;
+                if (stage_mode == 7){
+                    cell_size = (int)particles_in_scene[1].radius * 2;
+                } else if (stage_mode == 8){
+                    cell_size = (int)particles_in_scene[21].radius * 2;
+                } else if (stage_mode == 9){
+                    cell_size = (int)particles_in_scene[41].radius * 2;
+                }
                 int grid_width = sim_screen_bounds_width / cell_size;
                 int grid_height = sim_screen_bounds_height / cell_size;
                 free(grid.cells);
@@ -151,10 +164,30 @@ int main(void)
                     BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
                     break;
                 }
+                case 7: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
+                case 8: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
+                case 9: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
             }
 
             //ResolveCollisions(&grid, particles_in_scene, num_particles, dt);
-            UpdateGrid(&grid, particles_in_scene, num_particles);
+            if (stage_mode == 7){
+                UpdateGridKahuna(&grid, particles_in_scene, num_particles);
+            } else if (stage_mode == 8){
+                UpdateGridMeteors(&grid, particles_in_scene, num_particles, 20);
+            } else if (stage_mode == 9){
+                UpdateGridMeteors(&grid, particles_in_scene, num_particles, 40);
+            } else {
+                UpdateGrid(&grid, particles_in_scene, num_particles);
+            }
             FindCollisionsGrid(&grid, dt);
             //BruteForceCollisions(particles_in_scene, num_particles);
             UpdateParticles(particles_in_scene, num_particles, dt);
@@ -177,13 +210,22 @@ int main(void)
                 DrawStartGui(SCREEN_WIDTH, SCREEN_HEIGHT, stage_mode, scene_is_loading);
             } else if (sim_is_running) {
                 DrawParticleBounds(stage_mode, sim_screen_bounds_width, sim_screen_bounds_height);
-                DrawSimGui(SCREEN_WIDTH, SCREEN_HEIGHT, num_particles, stage_mode, sim_is_running, sim_should_start);
                 DrawParticles(particles_in_scene, num_particles);
+                DrawSimGui(SCREEN_WIDTH, SCREEN_HEIGHT, num_particles, stage_mode, sim_is_running, sim_should_start);
 
                 if (debug_mode == 1) {
-                    DrawCollisionGrid(particles_in_scene[0].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);
+                    if (stage_mode == 7){
+                        DrawCollisionGridKahuna(particles_in_scene[1].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);                          
+                    } else if (stage_mode == 8) {
+                        DrawCollisionGridMeteors(particles_in_scene[20].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);
+                    } else if (stage_mode == 9) {
+                        DrawCollisionGridMeteors(particles_in_scene[40].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);
+                    } else {
+                        DrawCollisionGrid(particles_in_scene[0].radius, sim_screen_bounds_width, sim_screen_bounds_height, &grid);
+                    }
                 }
             }
+            
             
         
 
