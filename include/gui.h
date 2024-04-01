@@ -119,6 +119,13 @@ void RecordSimInput(int* sim_is_running, int* sim_should_start, int* stage_mode)
         *sim_is_running = 0;
         time_elapsed = 0.0f;
 
+    } else if (IsKeyPressed(KEY_SIX)){
+        *stage_mode = 6;
+        printf("stage mode: %d\n", *stage_mode);
+        *sim_should_start = 2;
+        *sim_is_running = 0;
+        time_elapsed = 0.0f;
+
     }
     if (IsKeyPressed(KEY_R) && *sim_is_running == 0) {
         printf("asked to reset sim\n");

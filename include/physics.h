@@ -7,9 +7,9 @@
 #include <grid.h>
 #include <stdio.h>
 
-static const float restitution = 0.1f;
-static const float dampening = 0.9f;
-static const float gravity = 50.0f;
+static const float restitution = 0.6f;
+static const float dampening = 0.8f;
+static const float gravity = 75.0f;
 
 void BoundParticles(Particle *particles, int num_particles, int bounds_width, int bounds_height, int mode) {
     
@@ -48,7 +48,7 @@ void BoundParticles(Particle *particles, int num_particles, int bounds_width, in
                 particles[i].velocity = Vector2Scale(tangent, dot);
             }
         }
-    } else if (mode == 3 || mode == 4 || mode == 5) {
+    } else if (mode == 3 || mode == 4 || mode == 5 || mode == 6) {
         for (int i = 0; i < num_particles; i++) {
             float dist_to_left = particles[i].current_position.x;
             float dist_to_right = bounds_width - particles[i].current_position.x; 
@@ -144,7 +144,7 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
             
             float p1_speed = Vector2Length(p1->velocity);
             float p2_speed = Vector2Length(p2->velocity);
-            float rest_threshold = 0.1f;
+            float rest_threshold = 0.2f;
             
             if (p1_speed < rest_threshold || p2_speed < rest_threshold) {
                 elasticity *= 0.9f;
@@ -154,13 +154,13 @@ void CheckCellCollisions(Particle* p1, Particle* p2, float dt) {
             impulse_magnitude /= p1->mass + p2->mass;
             
             // Limit the maximum impulse magnitude
-            float max_impulse = 30.0f;
+            float max_impulse = 5.0f;
             impulse_magnitude = fminf(impulse_magnitude, max_impulse);
             
             Vector2 impulse = Vector2Scale(collision_normal, impulse_magnitude);
             p1->velocity = Vector2Add(p1->velocity, Vector2Scale(impulse, 1 / p1->mass));
             p2->velocity = Vector2Subtract(p2->velocity, Vector2Scale(impulse, 1 / p2->mass));
-            float vel_cap = 30.0f;
+            float vel_cap = 15.0f;
             if (p1->velocity.x > vel_cap) {
                 p1->velocity.x = vel_cap;
             }

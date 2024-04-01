@@ -57,7 +57,7 @@ int main(void)
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "particle engine v2");
     const float dt = 1.0f / 60.0f;
     float time_elapsed = 0.0f;
-    SetTargetFPS(60);               
+    SetTargetFPS(144);               
 
     // add some function to do all this so we can reset the simulation
     // "init_simulation" or something
@@ -85,12 +85,14 @@ int main(void)
         } else if (stage_mode == 2) {
             num_particles = 350;
         } else if (stage_mode == 3) {
-            num_particles = 1000;
+            num_particles = 3000;
         } else if (stage_mode == 4) {
-            num_particles = 2000;
+            num_particles = 6000;
             //grid.cell_size = (int)((particles_in_scene[0].radius) * 2.0);
         } else if (stage_mode == 5) {
-            num_particles = 4000;
+            num_particles = 8000;
+        } else if (stage_mode == 6) {
+            num_particles = 12000;
         }
 
         if (sim_should_start == 2) {
@@ -131,6 +133,10 @@ int main(void)
                     break;
                 }
                 case 5: {
+                    BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
+                    break;
+                }
+                case 6: {
                     BoundParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
                     break;
                 }
