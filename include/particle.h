@@ -247,7 +247,7 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
                 particles[i].velocity = (Vector2){0, 0};
                 particles[i].acceleration = (Vector2){0, 0};
                 particles[i].mass = particle_mass * 55.0f;
-                particles[i].current_position = (Vector2) {GetRandomValue(100, 800), -4000 - (i * 3500)};
+                particles[i].current_position = (Vector2) {GetRandomValue(100, (int)GetScreenWidth() - 100), -4000 - (i * 3500)};
                 particles[i].next_position = particles[i].current_position;
                 particles[i].last_position = particles[i].current_position;
                 particles[i].color = (Color){GetRandomValue(70, 255), GetRandomValue(0, 60), GetRandomValue(0, 60), 255};
@@ -295,7 +295,7 @@ void InitParticles(Particle *particles, int num_particles, int screen_width, int
                 particles[i].velocity = (Vector2){0, 0};
                 particles[i].acceleration = (Vector2){0, 0};
                 particles[i].mass = particle_mass * 25.0f;
-                particles[i].current_position = (Vector2) {GetRandomValue(100, 800), -3000 - (i * 2000)};
+                particles[i].current_position = (Vector2) {GetRandomValue(100, (int)GetScreenWidth()), -3000 - (i * 2000)};
                 particles[i].next_position = particles[i].current_position;
                 particles[i].last_position = particles[i].current_position;
                 particles[i].color = (Color){GetRandomValue(128, 255), GetRandomValue(0, 60), GetRandomValue(128, 255), 255};

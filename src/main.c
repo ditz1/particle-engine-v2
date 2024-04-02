@@ -10,8 +10,8 @@
 // we will figure out the math later
 // but we need to use multiples of 3 and 9
 
-#define SCREEN_WIDTH 900
-#define SCREEN_HEIGHT 900
+#define SCREEN_WIDTH 1280 
+#define SCREEN_HEIGHT 720
 
 
 int main(void)
@@ -35,8 +35,8 @@ int main(void)
     int num_particles = 500;
     Particle* particles_in_scene = (Particle *)malloc(num_particles * sizeof(Particle));
 
-    const int sim_screen_bounds_width = 900;
-    const int sim_screen_bounds_height = 900;
+    int sim_screen_bounds_width = 1280;
+    int sim_screen_bounds_height = 720;
 
     // fix this
     // if (stage_mode == 3) {
@@ -54,7 +54,7 @@ int main(void)
     Vector2 bounds_center = (Vector2){sim_screen_bounds_width / 2.0f, sim_screen_bounds_height / 2.0f};
 
 
-
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "particle engine v2");
     const float dt = 1.0f / 120.0f;
     float time_elapsed = 0.0f;
@@ -79,25 +79,27 @@ int main(void)
 
     while (!WindowShouldClose())   
     {
+        sim_screen_bounds_width = (int)GetScreenWidth();
+        sim_screen_bounds_height = (int)GetScreenHeight();
 
         if (stage_mode == 1) {
-            num_particles = 1000;
+            num_particles = 2000;
         } else if (stage_mode == 2) {
-            num_particles = 700;
+            num_particles = 800;
         } else if (stage_mode == 3) {
-            num_particles = 3000;
+            num_particles = 4000;
         } else if (stage_mode == 4) {
-            num_particles = 6000;
-        } else if (stage_mode == 5) {
             num_particles = 8000;
-        } else if (stage_mode == 6) {
+        } else if (stage_mode == 5) {
             num_particles = 12000;
+        } else if (stage_mode == 6) {
+            num_particles = 18000;
         } else if (stage_mode == 7) {
-            num_particles = 800 + 1;
+            num_particles = 1000 + 1;
         } else if (stage_mode == 8) {
-            num_particles = 3500 + 20;
+            num_particles = 4500 + 20;
         } else if (stage_mode == 9) {
-            num_particles = 3000 + 40;
+            num_particles = 6000 + 40;
         }
 
         if (sim_should_start == 2) {
@@ -190,7 +192,7 @@ int main(void)
             }
             FindCollisionsGrid(&grid, dt);
             //BruteForceCollisions(particles_in_scene, num_particles);
-            UpdateParticles(particles_in_scene, num_particles, dt);
+            UpdateParticles(particles_in_scene, num_particles, dt, stage_mode);
         }
         // both false means reset
         // have to figure out how to manage this memory because we 

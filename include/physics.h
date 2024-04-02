@@ -92,9 +92,10 @@ void UpdateParticleGravity(Particle *p, float dt) {
 }
 
 
-void UpdateParticle(Particle* p, float dt) {
-
-    UpdateParticleGravity(p, dt);
+void UpdateParticle(Particle* p, float dt, int mode) {
+    if (mode != 1){
+      UpdateParticleGravity(p, dt);
+    } 
     Vector2 velocity = (Vector2) {0, 0};
     velocity.x = p->current_position.x - p->last_position.x;
     velocity.y = p->current_position.y - p->last_position.y;
@@ -110,11 +111,11 @@ void UpdateParticle(Particle* p, float dt) {
 }
 
 
-void UpdateParticles(Particle *particles, int num_particles, float dt) {
+void UpdateParticles(Particle *particles, int num_particles, float dt, int mode) {
     //substep
     
     for (int i = 0; i < num_particles; i++) {
-        UpdateParticle(&particles[i], dt);
+        UpdateParticle(&particles[i], dt, mode);
     }
 }
 
