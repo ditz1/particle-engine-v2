@@ -25,7 +25,7 @@ typedef struct Particle
 
 void InitParticles(Particle *particles, int num_particles, int screen_width, int screen_height, int mode) {
     float dt = 1.0f/120.0f;
-    float particle_radius = 9.0f;
+    float particle_radius = 12.0f;
     float particle_mass = 1.0f;
     float rand_num_1 = GetRandomValue(180, 255);
     printf("rand_num_1: %f\n", rand_num_1);

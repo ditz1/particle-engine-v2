@@ -65,6 +65,8 @@ int main(void)
 
     InitParticles(particles_in_scene, num_particles, sim_screen_bounds_width, sim_screen_bounds_height, stage_mode);
     int cell_size = (int)particles_in_scene[0].radius * 2; // diameter
+    sim_screen_bounds_width = (sim_screen_bounds_width / cell_size) * cell_size;
+    sim_screen_bounds_height = (sim_screen_bounds_height / cell_size) * cell_size;
     int grid_width = sim_screen_bounds_width / cell_size;
     int grid_height = sim_screen_bounds_height / cell_size;
     Grid grid = {
@@ -79,27 +81,27 @@ int main(void)
 
     while (!WindowShouldClose())   
     {
-        sim_screen_bounds_width = (int)GetScreenWidth();
+        sim_screen_bounds_width = (int)GetScreenWidth(); 
         sim_screen_bounds_height = (int)GetScreenHeight();
 
         if (stage_mode == 1) {
-            num_particles = 2000;
+            num_particles = 300;
         } else if (stage_mode == 2) {
-            num_particles = 800;
+            num_particles = 200;
         } else if (stage_mode == 3) {
-            num_particles = 4000;
+            num_particles = 1000;
         } else if (stage_mode == 4) {
-            num_particles = 8000;
+            num_particles = 2000;
         } else if (stage_mode == 5) {
-            num_particles = 12000;
+            num_particles = 4000;
         } else if (stage_mode == 6) {
-            num_particles = 18000;
+            num_particles = 8000;
         } else if (stage_mode == 7) {
             num_particles = 1000 + 1;
         } else if (stage_mode == 8) {
-            num_particles = 4500 + 20;
+            num_particles = 5000 + 20;
         } else if (stage_mode == 9) {
-            num_particles = 6000 + 40;
+            num_particles = 3000 + 40;
         }
 
         if (sim_should_start == 2) {
@@ -119,11 +121,14 @@ int main(void)
                 } else if (stage_mode == 9){
                     cell_size = (int)particles_in_scene[41].radius * 2;
                 }
+                sim_screen_bounds_height = (sim_screen_bounds_height / cell_size) * cell_size;
+                sim_screen_bounds_width = (sim_screen_bounds_width / cell_size) * cell_size;
+               
                 int grid_width = sim_screen_bounds_width / cell_size;
                 int grid_height = sim_screen_bounds_height / cell_size;
                 free(grid.cells);
-                grid.width = grid_width;
-                grid.height = grid_height;
+                grid.width = grid_width+1;
+                grid.height = grid_height+1;
                 grid.cell_size = cell_size;
                 grid.cells = (GridCell *)calloc(grid_width * grid_height, sizeof(GridCell));
                 printf("reset grid\n");
